@@ -1,0 +1,104 @@
+/* Estilos generales para el root */
+#root {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Estilos generales para la tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+/* Estilos de encabezado */
+h1, h2 {
+    color: #333;
+}
+
+/* Estilos por clase de columnas */
+.select-column {
+    width: 50px;
+}
+
+.category-column {
+    width: 150px;
+}
+
+.name-column {
+    width: 200px;
+}
+
+.description-column {
+    width: 250px;
+}
+
+.price-column, .quantity-column {
+    width: 100px;
+}
+
+.image-column {
+    width: 100px;
+}
+
+.action-column {
+    width: 150px;
+}
+
+/* Estilo adicional para las imágenes en la columna de imágenes */
+.image-column img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+/* Estilos para inputs */
+input[type="text"],
+input[type="number"],
+select {
+    margin: 10px 0;
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type="file"] {
+    margin: 10px 0;
+    padding: 5px;
+}
+
+/* Estilos para botones */
+button {
+    padding: 8px 12px;
+    margin-left: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Estilo para las acciones de la tabla */
+.action-column button {
+    background-color: #f44336;
+    margin-right: 5px;
+}
+
+.action-column button:hover {
+    background-color: #e74c3c;
+}

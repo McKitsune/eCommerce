@@ -1,0 +1,33 @@
+footer {
+    background-color: #ffffff;
+    color: #db4d00;
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 150px;
+    box-shadow: 0 3px 10px rgba(82, 82, 82, 0.644);
+    border-radius: 30px;
+}
+
+footer img.footer-logo {
+    width: 40px; /* Ajusta el tamaño del logo según lo necesites */
+    margin-bottom: 10px; /* Espacio entre el logo y el texto */
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer a {
+    color: #5c5c5c; /* Cambia este color según tu diseño */
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
