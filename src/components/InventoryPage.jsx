@@ -357,4 +357,4 @@ export const getProductsByCategory = (categoryName) => {
     return category ? category.products : [];
 };
 
-export default InventoryPage;
+export default InventoryPage; 
