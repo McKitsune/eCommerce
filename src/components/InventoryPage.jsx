@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "../styles/InventoryPage.css";
+import "../styles/inventoryPage.css";
 import { FiEdit3 } from "react-icons/fi";
 import { LuTrash2 } from "react-icons/lu";
 
