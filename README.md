@@ -28,7 +28,7 @@ El proyecto sigue una estructura organizada y modular para facilitar la escalabi
    ├── 📁 utils          # Funciones y utilidades compartidas como formateadores y funciones auxiliares.
    ├── App.jsx           # Componente principal que gestiona la estructura y navegación de la aplicación.
    └── main.jsx          # Punto de entrada de la aplicación, donde se monta el componente principal en el DOM.
-
+````
 
 ## Tecnologías Utilizadas
 
