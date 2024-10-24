@@ -1,3 +1,4 @@
+//crea las paginas nuevas segun la categoria
 import fs from 'fs';
 import path from 'path';
 

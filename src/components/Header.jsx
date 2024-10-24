@@ -9,6 +9,15 @@ const Header = () => {
     const [isSubmenuOpen, setSubmenuOpen] = useState(false);
     const submenuRef = useRef(null);
     const [isScrolled, setIsScrolled] = useState(false); // Estado para manejar el scroll
+    const [categories, setCategories] = useState([]); // Estado para las categorías
+
+    // Cargar las categorías desde el backend
+    useEffect(() => {
+        fetch('http://localhost:3001/api/categories')
+            .then(response => response.json())
+            .then(data => setCategories(data))
+            .catch(error => console.error('Error al cargar categorías:', error));
+    }, []);
 
     const toggleSubmenu = () => {
         setSubmenuOpen(!isSubmenuOpen);
@@ -61,10 +70,13 @@ const Header = () => {
                         </span>
                         {isSubmenuOpen && (
                             <ul className="submenu">
-                                <li><Link to="/deportes" onClick={toggleSubmenu}>Deportes</Link></li>
-                                <li><Link to="/herramientas" onClick={toggleSubmenu}>Herramientas</Link></li>
-                                <li><Link to="/hogar" onClick={toggleSubmenu}>Hogar</Link></li>
-                                <li><Link to="/tecnologia" onClick={toggleSubmenu}>Tecnología</Link></li>
+                                {categories.map((category, index) => (
+                                    <li key={index}>
+                                        <Link to={`/${category.toLowerCase()}`} onClick={toggleSubmenu}>
+                                            {category}
+                                        </Link>
+                                    </li>
+                                ))}
                             </ul>
                         )}
                     </li>

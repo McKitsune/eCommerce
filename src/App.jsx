@@ -1,28 +1,49 @@
-// eslint-disable-next-line no-unused-vars
-import React from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-//principales header y footer
+// Componentes principales
 import Header from './components/Header';
 import Footer from './components/Footer';
-// paginas de categorias
-import HomePage from './components/HomePage'; 
-import Deportes from './pages/Deportes';
-import Hogar from './pages/Hogar';
-import Herramientas from './pages/Herramientas';
-import Tecnologia from './pages/Tecnologia';
-//pagina de inventario
+import HomePage from './components/HomePage';
 import InventoryPage from './components/InventoryPage';
-import { InventoryProvider } from './context/InventoryContext'; 
-//carrito de compras
-import { CartProvider } from './context/CartContext';
 import Cart from './components/Cart';
-//css
+// Contextos
+import { InventoryProvider } from './context/InventoryContext';
+import { CartProvider } from './context/CartContext';
+// CSS
 import './styles/App.css';
 
+// Configurar Amplify
+import { Amplify } from 'aws-amplify';
+import awsExports from './aws-exports'; // Archivo generado por Amplify
+Amplify.configure(awsExports);
 
-const App = () => {
+// App Component
+function App() {
+    const [categories, setCategories] = useState([]);
+
+    // Cargar las categorías creadas dinámicamente desde el backend
+    useEffect(() => {
+        fetch('http://localhost:3001/api/categories')
+            .then((response) => response.json())
+            .then((data) => setCategories(data))
+            .catch((error) => console.error('Error al cargar categorías:', error));
+    }, []);
+
+    // Función para cargar dinámicamente la página de la categoría
+    const loadCategoryPage = (category) => {
+        try {
+            const CategoryPage = React.lazy(() =>
+                import(`./pages/${category.charAt(0).toUpperCase() + category.slice(1)}Page.jsx`)
+            );
+            return CategoryPage;
+        } catch (error) {
+            console.error(`Error cargando la página para ${category}:`, error);
+            return null;
+        }
+    };
+
     return (
-        <InventoryProvider> {/* InventoryContext necesario para que CartContext pueda actualizar el inventario */}
+        <InventoryProvider>
             <CartProvider>
                 <Router>
                     <div className="App">
@@ -30,11 +51,26 @@ const App = () => {
                         <Routes>
                             <Route path="/" element={<HomePage />} />
                             <Route path="/inventory" element={<InventoryPage />} />
-                            <Route path="/deportes" element={<Deportes />} />
-                            <Route path="/hogar" element={<Hogar />} />
-                            <Route path="/herramientas" element={<Herramientas />} />
-                            <Route path="/tecnologia" element={<Tecnologia />} />
                             <Route path="/cart" element={<Cart />} />
+
+                            {/* Cargar dinámicamente las páginas de categorías */}
+                            {categories.map((category) => {
+                                const CategoryPage = loadCategoryPage(category);
+
+                                return (
+                                    CategoryPage && (
+                                        <Route
+                                            key={category}
+                                            path={`/${category.toLowerCase()}`}
+                                            element={
+                                                <Suspense fallback={<div>Cargando...</div>}>
+                                                    <CategoryPage />
+                                                </Suspense>
+                                            }
+                                        />
+                                    )
+                                );
+                            })}
                         </Routes>
                         <Footer />
                     </div>
@@ -42,6 +78,6 @@ const App = () => {
             </CartProvider>
         </InventoryProvider>
     );
-};
+}
 
 export default App;

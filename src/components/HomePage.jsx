@@ -1,9 +1,19 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
-import { getProductsByCategory } from '../components/InventoryPage';
 import { FaFire, FaClock, FaStar } from 'react-icons/fa';
-import { Link } from 'react-router-dom'; // Importamos Link para redirigir
-import '../styles/homepage.css'; // Importamos el archivo CSS
+import { Link } from 'react-router-dom';
+import '../styles/homepage.css';
+
+// Simulación de productos para cada categoría
+const getProductsByCategory = (category) => {
+    const allProducts = [
+        { category: 'Deportes', name: 'Balón de fútbol', images: ['path_to_image1'] },
+        { category: 'Herramientas', name: 'Martillo', images: ['path_to_image2'] },
+        { category: 'Hogar', name: 'Sofá', images: ['path_to_image3'] },
+        { category: 'Tecnología', name: 'Smartphone', images: ['path_to_image4'] }
+    ];
+    return allProducts.filter(product => product.category === category);
+};
 
 const HomePage = () => {
     const [randomDeportes, setRandomDeportes] = useState(null);
@@ -12,32 +22,31 @@ const HomePage = () => {
     const [randomTecnologia, setRandomTecnologia] = useState(null);
 
     useEffect(() => {
-        const deportesItems = getProductsByCategory('Deportes');
-        const herramientasItems = getProductsByCategory('Herramientas');
-        const hogarItems = getProductsByCategory('Hogar');
-        const tecnologiaItems = getProductsByCategory('Tecnología');
+        const fetchProducts = async () => {
+            const deportesItems = await getProductsByCategory('Deportes');
+            const herramientasItems = await getProductsByCategory('Herramientas');
+            const hogarItems = await getProductsByCategory('Hogar');
+            const tecnologiaItems = await getProductsByCategory('Tecnología');
 
-        
+            if (deportesItems.length > 0) {
+                setRandomDeportes(deportesItems[Math.floor(Math.random() * deportesItems.length)]);
+            }
+            if (herramientasItems.length > 0) {
+                setRandomHerramientas(herramientasItems[Math.floor(Math.random() * herramientasItems.length)]);
+            }
+            if (hogarItems.length > 0) {
+                setRandomHogar(hogarItems[Math.floor(Math.random() * hogarItems.length)]);
+            }
+            if (tecnologiaItems.length > 0) {
+                setRandomTecnologia(tecnologiaItems[Math.floor(Math.random() * tecnologiaItems.length)]);
+            }
+        };
 
-        if (deportesItems.length > 0) {
-            setRandomDeportes(deportesItems[Math.floor(Math.random() * deportesItems.length)]);
-        }
-        if (herramientasItems.length > 0) {
-            setRandomHerramientas(herramientasItems[Math.floor(Math.random() * herramientasItems.length)]);
-        }
-        if (hogarItems.length > 0) {
-            setRandomHogar(hogarItems[Math.floor(Math.random() * hogarItems.length)]);
-        }
-        if (tecnologiaItems.length > 0) {
-            const randomProduct = tecnologiaItems[Math.floor(Math.random() * tecnologiaItems.length)];
-            setRandomTecnologia(randomProduct);
-            console.log('Producto aleatorio de Tecnología:', randomProduct);
-        }
+        fetchProducts();
     }, []);
 
     return (
         <div className="homepage-container">
-            {/* Box con los tres círculos */}
             <div className="box">
                 <div className="circle-container">
                     <div className="circle">
@@ -61,9 +70,8 @@ const HomePage = () => {
                 </div>
             </div>
 
-            {/* Productos destacados en 3 columnas */}
             <div className="product-grid">
-                {randomDeportes && (
+                {randomDeportes && randomDeportes.images && (
                     <Link to="/deportes" className="product-highlight">
                         <h2>Deportes</h2>
                         <img src={randomDeportes.images[0]} alt={randomDeportes.name} />
@@ -71,7 +79,7 @@ const HomePage = () => {
                     </Link>
                 )}
 
-                {randomHerramientas && (
+                {randomHerramientas && randomHerramientas.images && (
                     <Link to="/herramientas" className="product-highlight">
                         <h2>Herramientas</h2>
                         <img src={randomHerramientas.images[0]} alt={randomHerramientas.name} />
@@ -79,7 +87,7 @@ const HomePage = () => {
                     </Link>
                 )}
 
-                {randomHogar && (
+                {randomHogar && randomHogar.images && (
                     <Link to="/hogar" className="product-highlight">
                         <h2>Hogar</h2>
                         <img src={randomHogar.images[0]} alt={randomHogar.name} />
@@ -87,7 +95,7 @@ const HomePage = () => {
                     </Link>
                 )}
 
-                {randomTecnologia && (
+                {randomTecnologia && randomTecnologia.images && (
                     <Link to="/tecnologia" className="product-highlight">
                         <h2>Tecnología</h2>
                         <img src={randomTecnologia.images[0]} alt={randomTecnologia.name} />

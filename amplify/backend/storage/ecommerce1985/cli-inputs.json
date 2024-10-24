@@ -1,0 +1,22 @@
+{
+  "resourceName": "ecommerce1985",
+  "tableName": "ecommerce1985",
+  "partitionKey": {
+    "fieldName": "productid",
+    "fieldType": "string"
+  },
+  "sortKey": {
+    "fieldName": "item",
+    "fieldType": "string"
+  },
+  "gsi": [
+    {
+      "name": "categoryIndex",
+      "partitionKey": {
+        "fieldName": "product",
+        "fieldType": "string"
+      }
+    }
+  ],
+  "triggerFunctions": []
+}

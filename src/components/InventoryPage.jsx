@@ -4,6 +4,7 @@ import { FiEdit3 } from "react-icons/fi";
 import { LuTrash2 } from "react-icons/lu";
 
 const InventoryPage = () => {
+    // Estado para almacenar categorías y productos
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState("");
     const [editingCategory, setEditingCategory] = useState(null);
@@ -16,48 +17,75 @@ const InventoryPage = () => {
     const [selectedProduct, setSelectedProduct] = useState("");
     const [productImages, setProductImages] = useState({});
 
+    // Efecto para cargar las categorías desde el almacenamiento local
     useEffect(() => {
-        const storedCategories = JSON.parse(localStorage.getItem("categories")) || [];
-        setCategories(storedCategories);
+        const storedCategories = localStorage.getItem("categories");
+
+        // Verifica si el valor está presente y si es un JSON válido
+        if (storedCategories) {
+            try {
+                const parsedCategories = JSON.parse(storedCategories);
+                console.log('Categorías desde localStorage:', parsedCategories);
+                setCategories(parsedCategories);
+            } catch (error) {
+                console.error('Error al parsear las categorías de localStorage:', error);
+                setCategories([]);
+            }
+        } else {
+            console.log('No se encontraron categorías en localStorage, inicializando con un array vacío.');
+            setCategories([]);
+        }
+
+        // Puedes eliminar la llamada al backend si solo trabajas con localStorage o asegurarte de que el backend no interfiera con los datos del frontend
     }, []);
 
+    // Función para obtener productos por categoría desde localStorage
+    const getProductsByCategory = (categoryName) => {
+        const storedCategories = JSON.parse(localStorage.getItem("categories")) || [];
+        const category = storedCategories.find(cat => cat.name === categoryName);
+        return category ? category.products : [];
+    };
+
+    // Función para agregar una nueva categoría
     const handleAddCategory = () => {
         if (newCategory) {
             const updatedCategories = [
                 ...categories,
-                { name: newCategory, products: [] },
+                { name: newCategory, products: [] },  // Agrega una nueva categoría vacía
             ];
+
             setCategories(updatedCategories);
-            localStorage.setItem("categories", JSON.stringify(updatedCategories));
+            localStorage.setItem("categories", JSON.stringify(updatedCategories));  // Guarda en localStorage
             setNewCategory("");
+            console.log('Categorías actualizadas y guardadas en localStorage:', updatedCategories);
         }
     };
 
-    const handleEditCategory = (categoryName) => {
-        setEditingCategory(categoryName);
-        setNewCategory(categoryName);
-    };
-
+    // Función para actualizar una categoría
     const handleUpdateCategory = () => {
         const updatedCategories = categories.map((category) =>
             category.name === editingCategory
-                ? { ...category, name: newCategory }
+                ? { ...category, name: newCategory }  // Actualiza el nombre de la categoría
                 : category
         );
         setCategories(updatedCategories);
-        localStorage.setItem("categories", JSON.stringify(updatedCategories));
-        setEditingCategory(null);
+        localStorage.setItem("categories", JSON.stringify(updatedCategories));  // Actualiza el almacenamiento local
+        setEditingCategory(null);  // Finaliza el modo de edición
         setNewCategory("");
+        console.log('Categorías actualizadas después de la edición:', updatedCategories);
     };
 
+    // Función para eliminar una categoría
     const handleDeleteCategory = (categoryName) => {
         const updatedCategories = categories.filter(
-            (category) => category.name !== categoryName
+            (category) => category.name !== categoryName  // Elimina la categoría seleccionada
         );
         setCategories(updatedCategories);
-        localStorage.setItem("categories", JSON.stringify(updatedCategories));
+        localStorage.setItem("categories", JSON.stringify(updatedCategories));  // Actualiza el almacenamiento local
+        console.log(`Categoría ${categoryName} eliminada. Categorías restantes:`, updatedCategories);
     };
 
+    // Función para agregar o actualizar un producto
     const handleAddOrUpdateProduct = () => {
         const price = parseFloat(newProductPrice);
         if (newProduct && selectedCategory && !isNaN(price) && newProductQuantity) {
@@ -67,11 +95,12 @@ const InventoryPage = () => {
                         ? category.products.map((product) =>
                             product.name === editingProduct.name
                                 ? {
+                                    ...product,
                                     name: newProduct,
                                     description: newProductDescription,
                                     price,
                                     quantity: newProductQuantity,
-                                    images: productImages[newProduct] || [],
+                                    images: productImages[newProduct] || [],  // Actualiza las imágenes del producto
                                 }
                                 : product
                         )
@@ -82,7 +111,7 @@ const InventoryPage = () => {
                                 description: newProductDescription,
                                 price,
                                 quantity: newProductQuantity,
-                                images: productImages[newProduct] || [],
+                                images: productImages[newProduct] || [],  // Agrega un nuevo producto con imágenes
                             },
                         ];
 
@@ -92,35 +121,13 @@ const InventoryPage = () => {
             });
 
             setCategories(updatedCategories);
-            localStorage.setItem("categories", JSON.stringify(updatedCategories));
-            resetForm();
+            localStorage.setItem("categories", JSON.stringify(updatedCategories));  // Guarda las actualizaciones en localStorage
+            console.log('Productos actualizados en la categoría:', updatedCategories);
+            resetForm();  // Reinicia el formulario
         }
     };
 
-    const handleImageChange = (e) => {
-        const files = Array.from(e.target.files);
-
-        const promises = files.map(file => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = (error) => reject(error);
-            });
-        });
-
-        Promise.all(promises)
-            .then(images => {
-                setProductImages((prev) => ({
-                    ...prev,
-                    [newProduct]: images,
-                }));
-            })
-            .catch(error => {
-                console.error("Error al convertir la imagen a Base64", error);
-            });
-    };
-
+    // Función para reiniciar el formulario después de agregar o actualizar un producto
     const resetForm = () => {
         setNewProduct("");
         setNewProductDescription("");
@@ -130,33 +137,7 @@ const InventoryPage = () => {
         setProductImages({});
     };
 
-    const handleEditProduct = (product) => {
-        setNewProduct(product.name);
-        setNewProductDescription(product.description);
-        setNewProductPrice(product.price.toString());
-        setNewProductQuantity(product.quantity);
-        setEditingProduct(product);
-        setSelectedCategory(product.category);
-        setProductImages({ [product.name]: product.images });
-    };
-
-    const handleDeleteProduct = (categoryName, productName) => {
-        const updatedCategories = categories.map((category) => {
-            if (category.name === categoryName) {
-                return {
-                    ...category,
-                    products: category.products.filter(
-                        (product) => product.name !== productName
-                    ),
-                };
-            }
-            return category;
-        });
-
-        setCategories(updatedCategories);
-        localStorage.setItem("categories", JSON.stringify(updatedCategories));
-    };
-
+    // Renderiza los productos de una categoría
     const renderProducts = (products, categoryName) => {
         return products.map((product, index) => (
             <tr key={index}>
@@ -166,7 +147,7 @@ const InventoryPage = () => {
                         name="selectedProduct"
                         value={product.name}
                         checked={selectedProduct === product.name}
-                        onChange={() => setSelectedProduct(product.name)}
+                        onChange={() => setSelectedProduct(product.name)}  // Selecciona el producto
                     />
                 </td>
                 <td className="category-column">{categoryName}</td>
@@ -191,16 +172,10 @@ const InventoryPage = () => {
                 <td className="action-column">
                     {selectedProduct === product.name && (
                         <>
-                            <button
-                                onClick={() =>
-                                    handleEditProduct({ ...product, category: categoryName })
-                                }
-                            >
+                            <button onClick={() => handleEditProduct({ ...product, category: categoryName })}>
                                 <FiEdit3 />
                             </button>
-                            <button
-                                onClick={() => handleDeleteProduct(categoryName, product.name)}
-                            >
+                            <button onClick={() => handleDeleteProduct(categoryName, product.name)}>
                                 <LuTrash2 />
                             </button>
                         </>
@@ -208,13 +183,6 @@ const InventoryPage = () => {
                 </td>
             </tr>
         ));
-    };
-
-    const handlePriceChange = (e) => {
-        const value = e.target.value;
-        if (/^\d*\.?\d*$/.test(value)) {
-            setNewProductPrice(value);
-        }
     };
 
     return (
@@ -226,7 +194,7 @@ const InventoryPage = () => {
                 <input
                     type="text"
                     value={newCategory}
-                    onChange={(e) => setNewCategory(e.target.value)}
+                    onChange={(e) => setNewCategory(e.target.value)}  // Maneja el cambio del nombre de la categoría
                     placeholder="Nombre de la categoría"
                 />
                 {editingCategory ? (
@@ -275,56 +243,6 @@ const InventoryPage = () => {
                 </tbody>
             </table>
 
-            <h2>Agregar Producto</h2>
-            <select
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                value={selectedCategory}
-            >
-                <option value="">Selecciona una categoría</option>
-                {categories.map((category, index) => (
-                    <option key={index} value={category.name}>
-                        {category.name}
-                    </option>
-                ))}
-            </select>
-            {selectedCategory && (
-                <>
-                    <input
-                        type="text"
-                        value={newProduct}
-                        onChange={(e) => setNewProduct(e.target.value)}
-                        placeholder="Nombre del producto"
-                    />
-                    <input
-                        type="text"
-                        value={newProductDescription}
-                        onChange={(e) => setNewProductDescription(e.target.value)}
-                        placeholder="Descripción del producto"
-                    />
-                    <input
-                        type="text"
-                        value={newProductPrice}
-                        onChange={handlePriceChange}
-                        placeholder="Precio"
-                    />
-                    <input
-                        type="number"
-                        value={newProductQuantity}
-                        onChange={(e) => setNewProductQuantity(e.target.value)}
-                        placeholder="Cantidad"
-                    />
-                    <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        onChange={handleImageChange}
-                    />
-                    <button onClick={handleAddOrUpdateProduct}>
-                        {editingProduct ? "Actualizar Producto" : "Agregar Producto"}
-                    </button>
-                </>
-            )}
-
             <h2>Productos</h2>
             <table>
                 <thead>
@@ -351,10 +269,4 @@ const InventoryPage = () => {
     );
 };
 
-export const getProductsByCategory = (categoryName) => {
-    const categories = JSON.parse(localStorage.getItem("categories")) || [];
-    const category = categories.find(cat => cat.name === categoryName);
-    return category ? category.products : [];
-};
-
-export default InventoryPage; 
+export default InventoryPage;
