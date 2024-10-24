@@ -12,10 +12,7 @@ import { CartProvider } from './context/CartContext';
 // CSS
 import './styles/App.css';
 
-// Configurar Amplify
-import { Amplify } from 'aws-amplify';
-import awsExports from './aws-exports'; // Archivo generado por Amplify
-Amplify.configure(awsExports);
+
 
 // App Component
 function App() {
