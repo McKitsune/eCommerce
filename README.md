@@ -95,4 +95,8 @@ Fork del Repositorio.
 Crea una rama con la nueva funcionalidad o corrección: git checkout -b nueva-funcionalidad.
 Haz los cambios y confirma los commits: git commit -m "Agrega nueva funcionalidad".
 Sube los cambios: git push origin nueva-funcionalidad.
+<<<<<<< HEAD
 Abre un Pull Request para revisar los cambios.
+=======
+Abre un Pull Request para revisar los cambios.
+>>>>>>> 58e15c839048065d2f34ea5ee51cf76e97331307
