@@ -79,5 +79,5 @@ function App() {
         </InventoryProvider>
     );
 }
-
+ 
 export default App;
